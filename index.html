@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alpine test</title>
+    <script
+      src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.3.5/dist/alpine.min.js"
+      defer
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+  </head>
+  <body>
+    <div x-data="{ deals: deals }">
+      <div x-text="deals"></div>
+    </div>
+    <div class="items"></div>
+    <div x-init="fetchDeals()" x-data="dropdown()">
+      <button x-on:click="open">Open</button>
+
+      <div x-show="isOpen()" x-on:click.away="close">
+        // Dropdown
+      </div>
+      <!-- <template x-if="deals && deals.length">
+        <h1>Deals</h1>
+        <template x-for="(item, index) in deals" :key="index">
+          <div x-text="item.title"></div>
+          Costs:
+          <div x-text="item.Size"></div>
+        </template>
+      </template> -->
+    </div>
+    <div id="app">
+      <div v-if="deals.length">
+        {{ deals }}
+      </div>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    let deals = [];
+    function dropdown() {
+      return {
+        show: false,
+        open() {
+          this.show = true;
+        },
+        close() {
+          this.show = false;
+        },
+        isOpen() {
+          return this.show === true;
+        },
+        deals: [],
+        async fetchDeals() {
+          const res = await axios.get(
+            "https://finance-strapi-cms.herokuapp.com/deal-remakes"
+          );
+          console.log("res", res);
+          this.deals = res.data;
+        },
+      };
+    }
+    var app = new Vue({
+      el: "#app",
+      data: {
+        message: "Hello Vue!",
+        deals: [],
+      },
+      methods: {
+        async fetchDeals() {
+          const res = await axios.get(
+            "https://finance-strapi-cms.herokuapp.com/deal-remakes"
+          );
+          console.log("res", res);
+          this.deals = res.data;
+        },
+      },
+      mounted() {
+        this.fetchDeals();
+      },
+    });
+  </script>
+</html>
